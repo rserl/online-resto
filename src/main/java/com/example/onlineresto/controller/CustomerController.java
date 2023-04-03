@@ -5,6 +5,7 @@ import com.example.onlineresto.service.CustomerService;
 import com.example.onlineresto.utils.constant.ApiUrlConstant;
 import com.example.onlineresto.utils.constant.CustomerMessageConstant;
 import com.example.onlineresto.utils.customResponse.Response;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ApiUrlConstant.CUSTOMER_PATH)
+@AllArgsConstructor
 public class CustomerController {
     CustomerService customerService;
 

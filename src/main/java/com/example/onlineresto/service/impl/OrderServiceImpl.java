@@ -7,7 +7,6 @@ import com.example.onlineresto.entity.Food;
 import com.example.onlineresto.entity.Order;
 import com.example.onlineresto.entity.OrderDetail;
 import com.example.onlineresto.repository.FoodRepository;
-import com.example.onlineresto.repository.OrderDetailRepository;
 import com.example.onlineresto.repository.OrderRepository;
 import com.example.onlineresto.service.CustomerService;
 import com.example.onlineresto.service.OrderDetailService;
@@ -48,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
             Food food = foodRepository.findById(orderDetail.getFood().getId()).get();
             food.setStock(food.getStock() - orderDetail.getQuantity());
             if (food.getStock() < 1){
-                throw new DataNotFoundException(FoodMessageConstant.OUT_OF_STOCK_ORDER);
+                throw new DataNotFoundException(FoodMessageConstant.OUT_OF_STOCK_FOOD);
             }
 
             food.setPrice(food.getPrice());
