@@ -20,9 +20,7 @@ public class Food {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-    @Column(nullable = false)
     private String foodName;
-
     private Integer price;
     private Integer stock;
 }

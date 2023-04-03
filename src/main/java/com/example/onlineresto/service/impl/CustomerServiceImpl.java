@@ -5,17 +5,15 @@ import com.example.onlineresto.repository.CustomerRepository;
 import com.example.onlineresto.service.CustomerService;
 import com.example.onlineresto.utils.constant.CustomerMessageConstant;
 import com.example.onlineresto.utils.exception.DataNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     CustomerRepository customerRepository;
-
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
 
     @Override
     public Customer save(Customer customer) {
@@ -32,13 +30,17 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerRepository.findById(customer.getId()).isPresent()){
             return customerRepository.save(customer);
         } else {
-            throw new DataNotFoundException(String.format(CustomerMessageConstant.CUSTOMER_UPDATE_NOT_FOUND, customer.getId()));
+            throw new DataNotFoundException(String.format(CustomerMessageConstant.CUSTOMER_NOT_FOUND, customer.getId()));
         }
     }
 
     @Override
     public Customer getById(String id) {
-        return customerRepository.findById(id).get();
+        if (customerRepository.findById(id).isPresent()){
+            return customerRepository.findById(id).get();
+        } else {
+            throw new DataNotFoundException(String.format(CustomerMessageConstant.CUSTOMER_NOT_FOUND, id));
+        }
     }
 
     @Override

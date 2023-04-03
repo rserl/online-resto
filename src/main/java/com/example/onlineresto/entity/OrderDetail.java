@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class OrderDetail {
     @Id
-    @Column(name = "food_id")
+    @Column(name = "order_detail_id")
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
@@ -30,5 +30,4 @@ public class OrderDetail {
     private Food food;
     private Integer itemPrice;
     private Integer quantity;
-
 }

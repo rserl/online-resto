@@ -9,5 +9,5 @@ public interface CustomerService {
     List<Customer> findAll();
     Customer update(Customer customer);
     Customer getById(String id);
-    void delete (String id);
+    void delete(String id);
 }

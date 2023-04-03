@@ -1,5 +1,6 @@
 package com.example.onlineresto.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,5 +33,7 @@ public class Order {
     private Date orderDate;
     private Integer totalPrice;
     private String orderStatus;
-    private List<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "order")
+    @JsonIgnoreProperties("order")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }
