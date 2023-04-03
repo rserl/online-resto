@@ -43,4 +43,9 @@ public class FoodServiceImpl implements FoodService {
     public void delete(String id) {
         foodRepository.deleteById(id);
     }
+
+    @Override
+    public List<Food> minStockFood() {
+        return foodRepository.findFoodMinStock();
+    }
 }

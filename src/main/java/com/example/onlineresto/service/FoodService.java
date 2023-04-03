@@ -10,4 +10,5 @@ public interface FoodService {
     Food update(Food food);
     Food getById(String id);
     void delete(String id);
+    List<Food> minStockFood();
 }

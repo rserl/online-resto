@@ -46,4 +46,9 @@ public class FoodController {
     public void deleteFood(@PathVariable String id){
         foodService.delete(id);
     }
+
+    @GetMapping("/min-foods")
+    public List<Food> getMinStockFood(){
+        return foodService.minStockFood();
+    }
 }
