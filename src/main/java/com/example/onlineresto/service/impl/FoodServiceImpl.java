@@ -44,8 +44,8 @@ public class FoodServiceImpl implements FoodService {
         foodRepository.deleteById(id);
     }
 
-    @Override
-    public List<Food> minStockFood() {
-        return foodRepository.findFoodMinStock();
-    }
+//    @Override
+//    public List<Food> bestSeller() {
+//        return foodRepository.findBestSeller();
+//    }
 }

@@ -1,5 +1,6 @@
 package com.example.onlineresto.service.impl;
 
+import com.example.onlineresto.entity.Food;
 import com.example.onlineresto.entity.Order;
 import com.example.onlineresto.entity.OrderDetail;
 import com.example.onlineresto.repository.OrderDetailRepository;
@@ -51,5 +52,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<String> bestSeller() {
+        List<String> bestSellers = orderDetailRepository.findBestSeller();
+        for (String foodName : bestSellers) {
+            System.out.println(foodName);
+        }
+        return bestSellers;
     }
 }

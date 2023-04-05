@@ -33,7 +33,7 @@ public class Order {
     private Date orderDate;
     private Integer totalPrice;
     private String orderStatus;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 }

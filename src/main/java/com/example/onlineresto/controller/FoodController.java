@@ -47,8 +47,9 @@ public class FoodController {
         foodService.delete(id);
     }
 
-    @GetMapping("/min-foods")
-    public List<Food> getMinStockFood(){
-        return foodService.minStockFood();
-    }
+//    @GetMapping("/best-seller")
+//    public ResponseEntity<List<Food>> getBestSeller(){
+//        List<Food> bestSeller = foodService.bestSeller();
+//        return new ResponseEntity<>(bestSeller, HttpStatus.OK);
+//    }
 }

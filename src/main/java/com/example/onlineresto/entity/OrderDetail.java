@@ -10,7 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "trx_order_Detail")
+@Table(name = "trx_order_detail")
 @Getter
 @Setter
 @NoArgsConstructor
