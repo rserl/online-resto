@@ -103,7 +103,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void update_non_existing_customer() {
+    void update_not_existing_customer() {
         //mock
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.empty());
 
