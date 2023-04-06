@@ -13,7 +13,7 @@ public class OrderDTO {
     private String orderId;
     private Date orderDate;
     private String customerName;
-    private String orderStatus;
+    private OrderStatus orderStatus;
     private Integer total;
     private List<OrderDetailDTO> orderDetailDTOS;
 }

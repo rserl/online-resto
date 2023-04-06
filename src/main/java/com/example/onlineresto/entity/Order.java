@@ -1,5 +1,6 @@
 package com.example.onlineresto.entity;
 
+import com.example.onlineresto.dto.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +33,8 @@ public class Order {
     private Restaurant restaurant;
     private Date orderDate;
     private Integer totalPrice;
-    private String orderStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("order")
     private List<OrderDetail> orderDetails = new ArrayList<>();

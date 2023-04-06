@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
             amount += subTotal;
         }
         saveOrder.setTotalPrice(amount);
-        saveOrder.setOrderStatus(OrderStatus.PENDING.name());
+        saveOrder.setOrderStatus(OrderStatus.PENDING);
         return saveOrder;
     }
 
@@ -101,35 +101,32 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> getOrder = orderRepository.findById(id);
         if (getOrder.isPresent()){
             Order orders = getOrder.get();
+            OrderStatus currentStatus = orders.getOrderStatus();
+            if (status.getStatus() == 3 && currentStatus == OrderStatus.COMPLETED) {
+                throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_COMPLETED, id));
+            }
 
             switch (status.getStatus()){
                 case 1:
-                    orders.setOrderStatus(OrderStatus.IN_PROCESS.name());
+                    orders.setOrderStatus(OrderStatus.IN_PROCESS);
                     break;
                 case 2:
-                    orders.setOrderStatus(OrderStatus.REJECTED.name());
-                    break;
+                    orders.setOrderStatus(OrderStatus.REJECTED);
+                    orderRepository.deleteById(id);
+                    throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_REJECTED, id));
+//                    break;
                 case 3:
-                    orders.setOrderStatus(OrderStatus.COMPLETED.name());
+                    orders.setOrderStatus(OrderStatus.COMPLETED);
                     break;
                 default:
-                    orders.setOrderStatus(OrderStatus.PENDING.name());
-            }
-            if (orders.getOrderStatus() == OrderStatus.REJECTED.name()) {
-                orderRepository.deleteById(id);
-                throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_REJECTED, id));
-            }
-
-            if (orders.getOrderStatus() == OrderStatus.COMPLETED.name()) {
-                orderRepository.deleteById(id);
-                throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_COMPLETED, id));
+                    orders.setOrderStatus(OrderStatus.PENDING);
             }
 
             orders = orderRepository.save(orders);
             OrderStatusDTO orderStatusDTO = new OrderStatusDTO();
             orderStatusDTO.setOrderId(orders.getId());
             orderStatusDTO.setCustomerName(orders.getCustomer().getCustomerName());
-            orderStatusDTO.setStatusOrder(orders.getOrderStatus());
+            orderStatusDTO.setStatusOrder(orders.getOrderStatus().toString());
 
             return orderStatusDTO;
         } else throw new DataNotFoundException(String.format(OrderMessageConstant.ORDER_NOT_FOUND, id));
@@ -149,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
             orderDTO.setOrderId(order.getId());
             orderDTO.setOrderDate(order.getOrderDate());
             orderDTO.setCustomerName(order.getCustomer().getCustomerName());
-            orderDTO.setOrderStatus(OrderStatus.COMPLETED.name());
+            orderDTO.setOrderStatus(OrderStatus.COMPLETED);
             List<OrderDetailDTO> orderDetailDTOS = new ArrayList<>();
 
             Integer amount = 0;
@@ -177,19 +174,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public TotalIncomeDTO totalIncome() {
-        List<Order> allOrders = orderRepository.findAll();
+        List<Order> completedOrders = orderRepository.findByOrderStatus(OrderStatus.COMPLETED);
 
-        if (allOrders == null || allOrders.isEmpty()) {
-            return null;
+        if (completedOrders == null || completedOrders.isEmpty()) {
+            throw new DataNotFoundException(String.format(OrderMessageConstant.NO_RECORD_DATA));
         }
 
-        Integer totalIncome = allOrders.stream()
+        Integer totalIncome = completedOrders.stream()
                 .map(Order::getTotalPrice)
                 .filter(order -> order != null)
                 .reduce(0, Integer::sum);
 
         TotalIncomeDTO totalIncomeDTO = new TotalIncomeDTO();
-        totalIncomeDTO.setTotalOrder(allOrders.size());
+        totalIncomeDTO.setTotalOrder(completedOrders.size());
         totalIncomeDTO.setTotalIncome(totalIncome);
 
         return totalIncomeDTO;
