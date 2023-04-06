@@ -134,7 +134,7 @@ class FoodServiceImplTest {
     }
 
     @Test
-    void getById_non_existing_food() {
+    void getById_not_existing_food() {
         //mock
         when(foodRepository.findById(id)).thenReturn(Optional.empty());
 

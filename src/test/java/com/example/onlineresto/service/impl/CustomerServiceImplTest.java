@@ -133,7 +133,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void getById_non_existing_customer() {
+    void getById_not_existing_customer() {
         //mock
         when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
