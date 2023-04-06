@@ -61,22 +61,22 @@ class CustomerServiceImplTest {
 
     @Test
     void find_all_customers() {
-        List<Customer> customerList = new ArrayList<>();
+        List<Customer> listOfCustomers = new ArrayList<>();
         Customer customer2 = new Customer("02", "new customer", "customer2@gmail.com", "081227898990", "bali");
-        customerList.add(customer);
-        customerList.add(customer2);
+        listOfCustomers.add(customer);
+        listOfCustomers.add(customer2);
 
         //mock
-        when(customerRepository.findAll()).thenReturn(customerList);
+        when(customerRepository.findAll()).thenReturn(listOfCustomers);
 
         //perform
-        List<Customer> getAllCustomer = customerService.findAll();
+        List<Customer> getAllCustomers = customerService.findAll();
 
         //verify result
-        assertNotNull(getAllCustomer);
-        assertEquals(2, customerList.size());
-        assertEquals("01", getAllCustomer.get(0).getId());
-        assertEquals("02", getAllCustomer.get(1).getId());
+        assertNotNull(getAllCustomers);
+        assertEquals(listOfCustomers.size(), getAllCustomers.size());
+        assertEquals("01", getAllCustomers.get(0).getId());
+        assertEquals("02", getAllCustomers.get(1).getId());
 
         //verify behaviour
         verify(customerRepository, times(1)).findAll();
@@ -154,5 +154,6 @@ class CustomerServiceImplTest {
 
         //verify behaviour
         verify(customerRepository, times(1)).deleteById(id);
+        verifyNoMoreInteractions(customerRepository);
     }
 }
