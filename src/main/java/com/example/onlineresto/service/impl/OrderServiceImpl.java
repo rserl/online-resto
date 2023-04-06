@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
         if (orderRepository.findById(id).isPresent()){
             Order order = orderRepository.findById(id).get();
 
-            if (!order.getOrderStatus().equals(OrderStatus.COMPLETED.name())){
+            if (!order.getOrderStatus().equals(OrderStatus.COMPLETED)){
                 throw new InvalidRequestException(OrderMessageConstant.ORDER_INCOMPLETE);
             }
 
