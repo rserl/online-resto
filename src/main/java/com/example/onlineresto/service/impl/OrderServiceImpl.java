@@ -11,6 +11,7 @@ import com.example.onlineresto.service.RestaurantService;
 import com.example.onlineresto.utils.constant.FoodMessageConstant;
 import com.example.onlineresto.utils.constant.OrderMessageConstant;
 import com.example.onlineresto.utils.exception.DataNotFoundException;
+import com.example.onlineresto.utils.exception.InvalidRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -68,19 +68,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+    public List<OrderDTO> findAll() {
+        List<Order> orders = orderRepository.findAll();
+        List<OrderDTO> orderDTOS = new ArrayList<>();
+
+        for (Order order: orders){
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setRestaurantName(order.getRestaurant().getRestaurantName());
+            orderDTO.setOrderId(order.getId());
+            orderDTO.setOrderDate(order.getOrderDate());
+            orderDTO.setCustomerName(order.getCustomer().getCustomerName());
+            orderDTO.setOrderStatus(order.getOrderStatus());
+            orderDTO.setTotal(order.getTotalPrice());
+
+            List<OrderDetailDTO> orderDetailDTOS = new ArrayList<>();
+            for (OrderDetail orderDetail: order.getOrderDetails()){
+                OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
+                orderDetailDTO.setFoodName(orderDetail.getFood().getFoodName());
+                orderDetailDTO.setPriceSell(orderDetail.getItemPrice());
+                orderDetailDTO.setQuantity(orderDetail.getQuantity());
+                orderDetailDTO.setSubTotal(orderDetail.getItemPrice() * orderDetail.getQuantity());
+                orderDetailDTOS.add(orderDetailDTO);
+            }
+            orderDTO.setOrderDetailDTOS(orderDetailDTOS);
+            orderDTOS.add(orderDTO);
+        }
+        return orderDTOS;
     }
 
     @Override
-    public Order update(String id, OrderStatusDTO status) {
+    public OrderStatusDTO update(String id, UpdateStatusDTO status) {
         Optional<Order> getOrder = orderRepository.findById(id);
         if (getOrder.isPresent()){
             Order orders = getOrder.get();
 
             switch (status.getStatus()){
                 case 1:
-                    orders.setOrderStatus(OrderStatus.ON_PROCESS.name());
+                    orders.setOrderStatus(OrderStatus.IN_PROCESS.name());
                     break;
                 case 2:
                     orders.setOrderStatus(OrderStatus.REJECTED.name());
@@ -93,9 +117,21 @@ public class OrderServiceImpl implements OrderService {
             }
             if (orders.getOrderStatus() == OrderStatus.REJECTED.name()) {
                 orderRepository.deleteById(id);
+                throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_REJECTED, id));
             }
 
-            return orderRepository.save(orders);
+            if (orders.getOrderStatus() == OrderStatus.COMPLETED.name()) {
+                orderRepository.deleteById(id);
+                throw new InvalidRequestException(String.format(OrderMessageConstant.ORDER_COMPLETED, id));
+            }
+
+            orders = orderRepository.save(orders);
+            OrderStatusDTO orderStatusDTO = new OrderStatusDTO();
+            orderStatusDTO.setOrderId(orders.getId());
+            orderStatusDTO.setCustomerName(orders.getCustomer().getCustomerName());
+            orderStatusDTO.setStatusOrder(orders.getOrderStatus());
+
+            return orderStatusDTO;
         } else throw new DataNotFoundException(String.format(OrderMessageConstant.ORDER_NOT_FOUND, id));
     }
 
@@ -103,10 +139,17 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO getById(String id) {
         if (orderRepository.findById(id).isPresent()){
             Order order = orderRepository.findById(id).get();
+
+            if (!order.getOrderStatus().equals(OrderStatus.COMPLETED.name())){
+                throw new InvalidRequestException(OrderMessageConstant.ORDER_INCOMPLETE);
+            }
+
             OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setRestaurantName(order.getRestaurant().getRestaurantName());
             orderDTO.setOrderId(order.getId());
             orderDTO.setOrderDate(order.getOrderDate());
             orderDTO.setCustomerName(order.getCustomer().getCustomerName());
+            orderDTO.setOrderStatus(OrderStatus.COMPLETED.name());
             List<OrderDetailDTO> orderDetailDTOS = new ArrayList<>();
 
             Integer amount = 0;
@@ -129,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
             orderDTO.setOrderDetailDTOS(orderDetailDTOS);
 
             return orderDTO;
-        } else throw new NoSuchElementException();
+        } else throw new DataNotFoundException(String.format(OrderMessageConstant.ORDER_NOT_FOUND, id));
     }
 
     @Override

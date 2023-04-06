@@ -2,8 +2,8 @@ package com.example.onlineresto.controller;
 
 import com.example.onlineresto.dto.OrderDTO;
 import com.example.onlineresto.dto.OrderStatusDTO;
+import com.example.onlineresto.dto.UpdateStatusDTO;
 import com.example.onlineresto.dto.TotalIncomeDTO;
-import com.example.onlineresto.entity.Food;
 import com.example.onlineresto.entity.Order;
 import com.example.onlineresto.entity.OrderDetail;
 import com.example.onlineresto.service.OrderDetailService;
@@ -35,13 +35,14 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders(){
-        return orderService.findAll();
+    public ResponseEntity<List<OrderDTO>> getAllOrders(){
+        List<OrderDTO> orderDTOS = orderService.findAll();
+        return new ResponseEntity<>(orderDTOS, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable String id, @RequestBody OrderStatusDTO status){
-        Order updatedOrder = orderService.update(id, status);
+    public ResponseEntity<OrderStatusDTO> updateOrder(@PathVariable String id, @RequestBody UpdateStatusDTO status){
+        OrderStatusDTO updatedOrder = orderService.update(id, status);
         return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
 
