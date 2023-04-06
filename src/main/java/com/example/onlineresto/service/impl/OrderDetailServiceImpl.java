@@ -26,35 +26,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderWrapper orderTransaction(String orderId) {
-        Order transaction = orderRepository.findById(orderId).get();
-        String customerName = transaction.getCustomer().getCustomerName();
-        Date purchaseDate = transaction.getOrderDate();
-        List<HashMap<String, String>> newListOrder = new ArrayList<>();
-
-        Integer subTotal = null;
-        Integer total = null;
-
-        for (OrderDetail orderDetail: transaction.getOrderDetails()){
-            HashMap<String, String> foodOrder = new HashMap<String, String>();
-            String foodName = orderDetail.getFood().getFoodName();
-            Integer orderPrice = orderDetail.getItemPrice();
-            Integer quantity = orderDetail.getQuantity();
-            subTotal = orderPrice * quantity;
-            total += subTotal;
-
-            foodOrder.put("foodName", foodName);
-            foodOrder.put("itemPrice", orderPrice.toString());
-            foodOrder.put("quantity", quantity.toString());
-            foodOrder.put("subTotal", subTotal.toString());
-            foodOrder.put("total", total.toString());
-            newListOrder.add(foodOrder);
-        }
-
-        return null;
-    }
-
-    @Override
     public List<String> bestSeller() {
         List<String> bestSellers = orderDetailRepository.findBestSeller();
         for (String foodName : bestSellers) {
